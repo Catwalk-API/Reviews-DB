@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - reviews_volume:/usr/share/app
+    ports:
+      - '5432:5432'
+volumes:
+  reviews_volume:
+    driver: local
+    driver_opts:
+        o: bind
+        type: none
+        device: /Users/neildudani/Desktop/Neil/HackReactor/Immersive/Projects/SDC/csv_data
+networks:
+  default:
+    external:
+        name: sdc

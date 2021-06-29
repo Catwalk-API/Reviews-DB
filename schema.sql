@@ -59,22 +59,22 @@ CREATE TABLE characteristic_reviews (
 -- LOAD INTO DATABASE USING COPY METHOD
 
 COPY photos(photo_id, review_id, url)
-FROM '/usr/share/app/test_reviews_photos.csv'
+FROM '/usr/share/app/reviews_photos.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY characteristics(characteristic_id, product_id, characteristic)
-FROM '/usr/share/app/test_characteristics.csv'
+FROM '/usr/share/app/characteristics.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY reviews(review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulnessCount)
-FROM '/usr/share/app/test_reviews.csv'
+FROM '/usr/share/app/reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY characteristic_reviews(id, characteristic_id, review_id, rating)
-FROM '/usr/share/app/test_characteristic_reviews.csv'
+FROM '/usr/share/app/characteristic_reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
@@ -152,5 +152,6 @@ SELECT setval('characteristic_reviews_id_seq', (SELECT MAX(id) FROM characterist
 
 --Create Indexes
 CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
-CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
 CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
+CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
+CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;

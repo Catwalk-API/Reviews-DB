@@ -17,7 +17,7 @@ volumes:
     driver_opts:
         o: bind
         type: none
-        device: /Users/neildudani/Desktop/Neil/HackReactor/Immersive/Projects/SDC/csv_data
+        device: /home/ubuntu/csv_data
 networks:
   default:
     external:

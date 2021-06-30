@@ -59,22 +59,22 @@ CREATE TABLE characteristic_reviews (
 -- LOAD INTO DATABASE USING COPY METHOD
 
 COPY photos(photo_id, review_id, url)
-FROM '/usr/share/app/reviews_photos.csv'
+FROM '/usr/share/app/test_reviews_photos.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY characteristics(characteristic_id, product_id, characteristic)
-FROM '/usr/share/app/characteristics.csv'
+FROM '/usr/share/app/test_characteristics.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY reviews(review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulnessCount)
-FROM '/usr/share/app/reviews.csv'
+FROM '/usr/share/app/test_reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY characteristic_reviews(id, characteristic_id, review_id, rating)
-FROM '/usr/share/app/characteristic_reviews.csv'
+FROM '/usr/share/app/test_characteristic_reviews.csv'
 DELIMITER ','
 CSV HEADER;
 

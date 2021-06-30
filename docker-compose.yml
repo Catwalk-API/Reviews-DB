@@ -18,3 +18,7 @@ volumes:
         o: bind
         type: none
         device: /home/ubuntu/csv_data
+networks:
+  default:
+    external:
+        name: sdc

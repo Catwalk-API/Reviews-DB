@@ -11,6 +11,12 @@ services:
       - reviews_volume:/usr/share/app
     ports:
       - '5432:5432'
+  web-app:
+    image: neildudani/docker-test
+    depends_on:
+      - db
+    ports:
+      - '5000:5000'
 volumes:
   reviews_volume:
     driver: local

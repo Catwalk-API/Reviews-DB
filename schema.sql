@@ -83,7 +83,6 @@ CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
 CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
 CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
 CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;
--- CREATE INDEX characteristics_reviews_characteristic_id_asc ON characteristic_reviews(characteristic_id ASC);
 
 UPDATE reviews
   SET date = to_timestamp(reviews.date::numeric/1000);
@@ -121,6 +120,7 @@ UPDATE meta
 
 UPDATE characteristics
   SET
+    characteristic_id=subquery.characteristic_id,
     ratingOneCount=subquery.ratingOneCount,
     ratingTwoCount=subquery.ratingTwoCount,
     ratingThreeCount=subquery.ratingThreeCount,
@@ -128,18 +128,14 @@ UPDATE characteristics
     ratingFiveCount=subquery.ratingFiveCount
   FROM (
     SELECT
-      ch.characteristic_id as characteristic_id,
+      cr.characteristic_id as characteristic_id,
       SUM (CASE WHEN cr.rating = 1 THEN 1 ELSE 0 END) AS ratingOneCount,
       SUM (CASE WHEN cr.rating = 2 THEN 1 ELSE 0 END) AS ratingTwoCount,
       SUM (CASE WHEN cr.rating = 3 THEN 1 ELSE 0 END) AS ratingThreeCount,
       SUM (CASE WHEN cr.rating = 4 THEN 1 ELSE 0 END) AS ratingFourCount,
       SUM (CASE WHEN cr.rating = 5 THEN 1 ELSE 0 END) AS ratingFiveCount
     FROM
-      characteristic_reviews cr
-    INNER JOIN
-      (SELECT characteristic_id FROM characteristics) ch
-    ON
-      ch.characteristic_id = cr.characteristic_id
+      (SELECT characteristic_id, rating FROM characteristic_reviews) cr
     GROUP BY 1
   ) AS subquery
   WHERE characteristics.characteristic_id = subquery.characteristic_id;

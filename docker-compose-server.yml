@@ -3,8 +3,7 @@ services:
   web-app:
     image: neildudani/docker-test
     ports:
-      - '5000:5000'
-    network_mode: 'host'
+      - '80:5000'
 networks:
   default:
     external:

@@ -78,6 +78,13 @@ FROM '/usr/share/app/characteristic_reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
+--Create Indexes
+CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
+CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
+CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
+CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;
+-- CREATE INDEX characteristics_reviews_characteristic_id_asc ON characteristic_reviews(characteristic_id ASC);
+
 UPDATE reviews
   SET date = to_timestamp(reviews.date::numeric/1000);
 
@@ -114,7 +121,6 @@ UPDATE meta
 
 UPDATE characteristics
   SET
-    product_id=subquery.product_id,
     ratingOneCount=subquery.ratingOneCount,
     ratingTwoCount=subquery.ratingTwoCount,
     ratingThreeCount=subquery.ratingThreeCount,
@@ -123,7 +129,6 @@ UPDATE characteristics
   FROM (
     SELECT
       ch.characteristic_id as characteristic_id,
-      ch.product_id as product_id,
       SUM (CASE WHEN cr.rating = 1 THEN 1 ELSE 0 END) AS ratingOneCount,
       SUM (CASE WHEN cr.rating = 2 THEN 1 ELSE 0 END) AS ratingTwoCount,
       SUM (CASE WHEN cr.rating = 3 THEN 1 ELSE 0 END) AS ratingThreeCount,
@@ -132,14 +137,10 @@ UPDATE characteristics
     FROM
       characteristic_reviews cr
     INNER JOIN
-      (SELECT characteristic_id, product_id, characteristic FROM characteristics) ch
+      (SELECT characteristic_id FROM characteristics) ch
     ON
       ch.characteristic_id = cr.characteristic_id
-    INNER JOIN
-      (SELECT review_id FROM reviews) r
-    ON
-      cr.review_id = r.review_id
-    GROUP BY 1,2
+    GROUP BY 1
   ) AS subquery
   WHERE characteristics.characteristic_id = subquery.characteristic_id;
 
@@ -149,9 +150,3 @@ SELECT setval('reviews_review_id_seq', (SELECT MAX(review_id) FROM reviews));
 SELECT setval('photos_photo_id_seq', (SELECT MAX(photo_id) FROM photos));
 SELECT setval('characteristics_characteristic_id_seq', (SELECT MAX(characteristic_id) FROM characteristics));
 SELECT setval('characteristic_reviews_id_seq', (SELECT MAX(id) FROM characteristic_reviews));
-
---Create Indexes
-CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
-CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
-CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
-CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;

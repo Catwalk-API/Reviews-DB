@@ -118,27 +118,27 @@ UPDATE meta
 
 -- Update Characteristics
 
-UPDATE characteristics
-  SET
-    characteristic_id=subquery.characteristic_id,
-    ratingOneCount=subquery.ratingOneCount,
-    ratingTwoCount=subquery.ratingTwoCount,
-    ratingThreeCount=subquery.ratingThreeCount,
-    ratingFourCount=subquery.ratingFourCount,
-    ratingFiveCount=subquery.ratingFiveCount
-  FROM (
-    SELECT
-      cr.characteristic_id as characteristic_id,
-      SUM (CASE WHEN cr.rating = 1 THEN 1 ELSE 0 END) AS ratingOneCount,
-      SUM (CASE WHEN cr.rating = 2 THEN 1 ELSE 0 END) AS ratingTwoCount,
-      SUM (CASE WHEN cr.rating = 3 THEN 1 ELSE 0 END) AS ratingThreeCount,
-      SUM (CASE WHEN cr.rating = 4 THEN 1 ELSE 0 END) AS ratingFourCount,
-      SUM (CASE WHEN cr.rating = 5 THEN 1 ELSE 0 END) AS ratingFiveCount
-    FROM
-      (SELECT characteristic_id, rating FROM characteristic_reviews) cr
-    GROUP BY 1
-  ) AS subquery
-  WHERE characteristics.characteristic_id = subquery.characteristic_id;
+-- UPDATE characteristics
+--   SET
+--     characteristic_id=subquery.characteristic_id,
+--     ratingOneCount=subquery.ratingOneCount,
+--     ratingTwoCount=subquery.ratingTwoCount,
+--     ratingThreeCount=subquery.ratingThreeCount,
+--     ratingFourCount=subquery.ratingFourCount,
+--     ratingFiveCount=subquery.ratingFiveCount
+--   FROM (
+--     SELECT
+--       cr.characteristic_id as characteristic_id,
+--       SUM (CASE WHEN cr.rating = 1 THEN 1 ELSE 0 END) AS ratingOneCount,
+--       SUM (CASE WHEN cr.rating = 2 THEN 1 ELSE 0 END) AS ratingTwoCount,
+--       SUM (CASE WHEN cr.rating = 3 THEN 1 ELSE 0 END) AS ratingThreeCount,
+--       SUM (CASE WHEN cr.rating = 4 THEN 1 ELSE 0 END) AS ratingFourCount,
+--       SUM (CASE WHEN cr.rating = 5 THEN 1 ELSE 0 END) AS ratingFiveCount
+--     FROM
+--       (SELECT characteristic_id, rating FROM characteristic_reviews) cr
+--     GROUP BY 1
+--   ) AS subquery
+--   WHERE characteristics.characteristic_id = subquery.characteristic_id;
 
 -- Reset Id For All Tables
 SELECT setval('meta_product_id_seq', (SELECT MAX(product_id) FROM meta));

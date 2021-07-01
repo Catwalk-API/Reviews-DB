@@ -5,7 +5,6 @@ CREATE DATABASE reviews_sdc;
 \c reviews_sdc;
 
 --CREATE SCHEMA
-
 CREATE TABLE meta (
   product_id serial PRIMARY KEY,
   ratingOneCount INT DEFAULT 0,
@@ -57,24 +56,23 @@ CREATE TABLE characteristic_reviews (
 );
 
 -- LOAD INTO DATABASE USING COPY METHOD
-
 COPY photos(photo_id, review_id, url)
-FROM '/usr/share/app/reviews_photos.csv'
+FROM '/Users/neildudani/Desktop/Neil/HackReactor/Immersive/Projects/SDC/csv_data/reviews_photos.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY characteristics(characteristic_id, product_id, characteristic)
-FROM '/usr/share/app/characteristics.csv'
+FROM '/Users/neildudani/Desktop/Neil/HackReactor/Immersive/Projects/SDC/csv_data/characteristics.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY reviews(review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulnessCount)
-FROM '/usr/share/app/reviews.csv'
+FROM '/Users/neildudani/Desktop/Neil/HackReactor/Immersive/Projects/SDC/csv_data/reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
 COPY characteristic_reviews(id, characteristic_id, review_id, rating)
-FROM '/usr/share/app/characteristic_reviews.csv'
+FROM '/Users/neildudani/Desktop/Neil/HackReactor/Immersive/Projects/SDC/csv_data/characteristic_reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
@@ -83,6 +81,7 @@ CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
 CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
 CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
 CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;
+CREATE INDEX characteristics_reviews_characteristic_id_asc ON characteristic_reviews(characteristic_id ASC);
 
 UPDATE reviews
   SET date = to_timestamp(reviews.date::numeric/1000);
@@ -115,30 +114,6 @@ UPDATE meta
     GROUP BY 1
   ) AS subquery
   WHERE meta.product_id = subquery.product_id;
-
--- Update Characteristics
-
--- UPDATE characteristics
---   SET
---     characteristic_id=subquery.characteristic_id,
---     ratingOneCount=subquery.ratingOneCount,
---     ratingTwoCount=subquery.ratingTwoCount,
---     ratingThreeCount=subquery.ratingThreeCount,
---     ratingFourCount=subquery.ratingFourCount,
---     ratingFiveCount=subquery.ratingFiveCount
---   FROM (
---     SELECT
---       cr.characteristic_id as characteristic_id,
---       SUM (CASE WHEN cr.rating = 1 THEN 1 ELSE 0 END) AS ratingOneCount,
---       SUM (CASE WHEN cr.rating = 2 THEN 1 ELSE 0 END) AS ratingTwoCount,
---       SUM (CASE WHEN cr.rating = 3 THEN 1 ELSE 0 END) AS ratingThreeCount,
---       SUM (CASE WHEN cr.rating = 4 THEN 1 ELSE 0 END) AS ratingFourCount,
---       SUM (CASE WHEN cr.rating = 5 THEN 1 ELSE 0 END) AS ratingFiveCount
---     FROM
---       (SELECT characteristic_id, rating FROM characteristic_reviews) cr
---     GROUP BY 1
---   ) AS subquery
---   WHERE characteristics.characteristic_id = subquery.characteristic_id;
 
 -- Reset Id For All Tables
 SELECT setval('meta_product_id_seq', (SELECT MAX(product_id) FROM meta));

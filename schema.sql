@@ -76,12 +76,6 @@ FROM '/usr/share/app/characteristic_reviews.csv'
 DELIMITER ','
 CSV HEADER;
 
---Create Indexes
-CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
-CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
-CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
-CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;
-CREATE INDEX characteristics_reviews_characteristic_id_asc ON characteristic_reviews(characteristic_id ASC);
 
 UPDATE reviews
   SET date = to_timestamp(reviews.date::numeric/1000);
@@ -114,6 +108,14 @@ UPDATE meta
     GROUP BY 1
   ) AS subquery
   WHERE meta.product_id = subquery.product_id;
+
+--Create Indexes
+CREATE INDEX reviews_product_id_asc ON reviews(product_id ASC);
+CREATE INDEX characteristics_product_id_asc ON characteristics(product_id ASC);
+CREATE INDEX photos_review_id_asc ON photos(review_id ASC);
+CREATE INDEX reviews_reported_index ON reviews(review_id) WHERE reported is true;
+-- CREATE INDEX characteristic_reviews_characteristic_id_asc ON characteristic_reviews(characteristic_id ASC);
+CREATE INDEX characteristic_reviews_review_id_asc ON characteristic_reviews(review_id ASC);
 
 -- Reset Id For All Tables
 SELECT setval('meta_product_id_seq', (SELECT MAX(product_id) FROM meta));
